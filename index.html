@@ -338,13 +338,26 @@
       return value.length > max ? value.slice(0, max).trimEnd() + "…" : value;
     }
 
-    function safeImageURL(value) {
-      if (typeof value !== "string" || !value.trim()) return "";
-      try {
-        const url = new URL(value, window.location.href);
-        return ["https:", "http:"].includes(url.protocol) ? url.href : "";
-      } catch { return ""; }
-    }
+    
+function safeImageURL(value) {
+  if (typeof value !== "string" || !value.trim()) return "";
+
+  const image = value.trim();
+
+  // Allow Base64 image data URIs.
+  if (/^data:image\/(png|jpeg|jpg|webp|gif);base64,[A-Za-z0-9+/=\s]+$/i.test(image)) {
+    return image.replace(/\s/g, "");
+  }
+
+  // Allow normal HTTP and HTTPS image URLs.
+  try {
+    const url = new URL(image, window.location.href);
+    return ["https:", "http:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
 
     async function fetchStories(force = false) {
       if (storiesCache && !force) return storiesCache;
@@ -527,15 +540,19 @@
       dateNode.dateTime = story.date || "";
       document.getElementById("readingTime").textContent = `${readingMinutes(story.content)} min read`;
       const image = document.getElementById("storyImage");
-      if (story.image) {
-        image.src = story.image;
-        image.alt = story.title ? `Image accompanying the story: ${story.title}` : "Story image";
-        image.classList.remove("hidden");
-        image.onerror = () => image.classList.add("hidden");
-      } else {
-        image.removeAttribute("src");
-        image.classList.add("hidden");
-      }
+      image.onerror = () => {
+  console.error("Story image failed to load:", image.src.substring(0, 100));
+  image.classList.add("hidden");
+};
+
+if (story.image) {
+  image.src = story.image;
+  image.alt = `Image accompanying the story: ${story.title}`;
+  image.classList.remove("hidden");
+} else {
+  image.removeAttribute("src");
+  image.classList.add("hidden");
+}
       appendStoryText(document.getElementById("storyContent"), story.content);
       document.title = `${story.title} — little stories`;
       document.querySelector('meta[name="description"]').content = excerpt(story.content, 155);
