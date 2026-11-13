@@ -618,9 +618,6 @@ if (story.image) {
       if (window.location.pathname.startsWith("/story/")) route();
       else renderHome(true);
     });
-    ["topShareButton", "bottomShareButton"].forEach(id => {
-      document.getElementById(id).addEventListener("click", shareCurrentStory);
-    });
 
     document.addEventListener("click", event => {
       const link = event.target.closest('a[href^="/story/"]');
