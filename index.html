@@ -613,14 +613,6 @@ if (story.image) {
       }
     }
 
-    function goHome() {
-      history.pushState({}, "", "/");
-      route();
-    }
-
-    document.getElementById("backButton").addEventListener("click", goHome);
-    document.getElementById("bottomBackButton").addEventListener("click", goHome);
-    document.getElementById("notFoundHome").addEventListener("click", goHome);
     document.getElementById("retryButton").addEventListener("click", () => {
       storiesCache = null;
       if (window.location.pathname.startsWith("/story/")) route();
