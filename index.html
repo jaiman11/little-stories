@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f5ef">
   <meta name="description" content="A quiet corner of the internet for stories, thoughts, and little moments.">
+  <meta property="og:site_name" content="little stories">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="little stories — a quiet place for words">
+  <meta property="og:description" content="A quiet corner of the internet for stories, thoughts, and little moments.">
+  <meta name="twitter:card" content="summary">
+  <!-- DYNAMIC_STORY_META -->
   <title>little stories — a quiet place for words</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -406,7 +412,7 @@
         card.className = "story-card";
         const link = document.createElement("a");
         link.className = "card-link";
-        link.href = `#/story/${encodeURIComponent(story.id)}`;
+        link.href = `/story/${encodeURIComponent(story.id)}`;
         link.setAttribute("aria-label", `Read ${story.title}`);
 
         if (story.image) {
@@ -569,8 +575,8 @@
     }
 
     async function route() {
-      const hash = window.location.hash || "#/";
-      const match = hash.match(/^#\/story\/([^/?#]+)/);
+      const pathname = window.location.pathname || "/";
+      const match = pathname.match(/^\/story\/([^/]+)\/?$/);
       if (!match) {
         currentStory = null;
         document.title = "little stories — a quiet place for words";
@@ -578,7 +584,8 @@
         await renderHome();
         return;
       }
-      const id = decodeURIComponent(match[1]);
+      let id;
+      try { id = decodeURIComponent(match[1]); } catch { showView("notfound"); return; }
       showView("story");
       document.getElementById("storyTitle").textContent = "Finding this story…";
       try {
@@ -596,21 +603,32 @@
       }
     }
 
-    function goHome() { window.location.hash = "/"; }
+    function goHome() {
+      history.pushState({}, "", "/");
+      route();
+    }
 
     document.getElementById("backButton").addEventListener("click", goHome);
     document.getElementById("bottomBackButton").addEventListener("click", goHome);
     document.getElementById("notFoundHome").addEventListener("click", goHome);
     document.getElementById("retryButton").addEventListener("click", () => {
       storiesCache = null;
-      if (window.location.hash.startsWith("#/story/")) route();
+      if (window.location.pathname.startsWith("/story/")) route();
       else renderHome(true);
     });
     ["topShareButton", "bottomShareButton"].forEach(id => {
       document.getElementById(id).addEventListener("click", shareCurrentStory);
     });
 
-    window.addEventListener("hashchange", route);
+    document.addEventListener("click", event => {
+      const link = event.target.closest('a[href^="/story/"]');
+      if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      history.pushState({}, "", link.href);
+      route();
+    });
+
+    window.addEventListener("popstate", route);
     window.addEventListener("scroll", () => {
       if (storyView.classList.contains("hidden")) return;
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
