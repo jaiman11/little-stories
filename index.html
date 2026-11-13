@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -164,15 +165,12 @@
 
     .story-cover {
       width: 100%;
+      max-height: 600px;
       height: auto;
       object-fit: cover;
       display: block;
       margin: 48px auto 0;
-
-  max-width: 100%;
-  border-radius: 8px;
-
-      
+      background: var(--paper-2);
     }
 
     .story-footnote-image {
@@ -239,6 +237,61 @@
       color: var(--ink);
       border-color: var(--line);
     }
+
+    .story-footnote-wrapper {
+  position: relative;
+  width: 100%;
+  margin: 40px auto 20px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.story-footnote-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: filter 0.4s ease;
+}
+
+.story-footnote-wrapper.is-blurred .story-footnote-image {
+  filter: blur(14px);
+  transform: scale(1.04);
+}
+
+.story-footnote-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.story-footnote-mask button {
+  padding: 12px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 30px;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.story-footnote-wrapper:not(.is-blurred) .story-footnote-mask {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.story-footnote-wrapper:not(.is-blurred) .story-footnote-image {
+  filter: none;
+  transform: none;
+}
 
     .button.secondary:hover { border-color: var(--ink); }
 
@@ -389,6 +442,11 @@
         font-size: clamp(2.7rem, 13vw, 4rem);
       }
 
+      .story-cover {
+        margin-top: 35px;
+        max-height: 420px;
+      }
+
       .story-content {
         margin-top: 38px;
         font-size: 1.04rem;
@@ -458,12 +516,18 @@
 
         <div id="storyContent" class="story-content"></div>
 
-        <img
-  id="storyFootnoteImage"
-  class="story-footnote-image"
-  alt="Story footnote image"
-  loading="lazy"
-/>
+        <div id="storyFootnoteWrapper" class="story-footnote-wrapper is-blurred" style="display: none;">
+          <img
+            id="storyFootnoteImage"
+            class="story-footnote-image"
+            alt="Story footnote image"
+            loading="lazy"
+          />
+        
+          <div class="story-footnote-mask" id="storyFootnoteMask">
+            <button type="button">View image</button>
+          </div>
+        </div>
 
         <div class="story-end" aria-label="The end">✳</div>
 
@@ -501,9 +565,9 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // =========================================
+    // ==========================================
     // GITHUB GIST CONFIGURATION
-    // =========================================
+    // ==========================================
 
     const GIST_BASE_URL =
       "https://gist.githubusercontent.com/jaiman11/0607f6913263a7141ab4848030b19e46/raw";
@@ -746,16 +810,25 @@
         story.content
       );
 
-      const footnoteImage = document.getElementById("storyFootnoteImage");
+      
 
-if (footnoteImage) {
+      const footnoteWrapper = document.getElementById("storyFootnoteWrapper");
+const footnoteImage = document.getElementById("storyFootnoteImage");
+const footnoteMask = document.getElementById("storyFootnoteMask");
+
+if (footnoteWrapper && footnoteImage && footnoteMask) {
   if (story.footnoteImage) {
     footnoteImage.src = story.footnoteImage;
-    footnoteImage.style.display = "block";
+    footnoteWrapper.style.display = "block";
+    footnoteWrapper.classList.add("is-blurred");
   } else {
     footnoteImage.removeAttribute("src");
-    footnoteImage.style.display = "none";
+    footnoteWrapper.style.display = "none";
   }
+
+  footnoteMask.onclick = () => {
+    footnoteWrapper.classList.remove("is-blurred");
+  };
 }
 
       // Update page description.
