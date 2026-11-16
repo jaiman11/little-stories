@@ -166,21 +166,79 @@
     }
 
     .story-card-image-wrap {
+      position: relative;
       overflow: hidden;
+      isolation: isolate;
       aspect-ratio: 4 / 3;
-      background: var(--paper-2);
+      background:
+        radial-gradient(ellipse at 22% 18%, rgba(255,255,255,.72), transparent 48%),
+        linear-gradient(135deg, #e8e5da 0%, #dcdccd 48%, #eeece4 100%);
       margin-bottom: 16px;
     }
 
+    .story-card-image-wrap::before,
+    .story-card-image-wrap::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .story-card-image-wrap::before {
+      z-index: 0;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 72% 78%, rgba(119,123,96,.13), transparent 42%),
+        linear-gradient(110deg, transparent 20%, rgba(255,255,255,.38) 45%, transparent 70%);
+      background-size: 100% 100%, 220% 100%;
+      animation: placeholder-shimmer 2.2s ease-in-out infinite;
+    }
+
+    .story-card-image-wrap::after {
+      z-index: 1;
+      inset: 0;
+      opacity: 0;
+      background: linear-gradient(180deg, transparent 65%, rgba(37,37,31,.035));
+      transition: opacity .35s ease;
+    }
+
+    .story-card-image-wrap.is-loaded::before { animation: none; opacity: 0; }
+    .story-card-image-wrap.is-loaded::after { opacity: 1; }
+
     .story-card img {
+      position: relative;
+      z-index: 2;
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform .55s ease;
+      opacity: 0;
+      filter: blur(16px);
+      transform: scale(1.035);
+      transition: opacity .65s ease, filter .75s ease, transform .75s ease;
     }
 
-    .story-card:hover img { transform: scale(1.045); }
+    .story-card-image-wrap.is-loaded img {
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1);
+    }
+
+    .story-card:hover .story-card-image-wrap.is-loaded img {
+      transform: scale(1.045);
+    }
+
+    .story-card-image-wrap.is-error::before {
+      animation: none;
+      opacity: 1;
+      background:
+        radial-gradient(ellipse at 50% 35%, rgba(255,255,255,.65), transparent 55%),
+        linear-gradient(135deg, #e9e6dc, #dedecf);
+    }
+
+    @keyframes placeholder-shimmer {
+      0% { background-position: 0 0, 100% 0; }
+      100% { background-position: 0 0, -120% 0; }
+    }
 
     .story-card-title {
       font: 500 clamp(1.08rem, 1.7vw, 1.35rem)/1.35 var(--serif);
@@ -301,6 +359,141 @@
   border-radius: 8px;
   object-fit: cover;
 }
+
+
+    .listen-player {
+      width: min(650px, 100%);
+      margin: 34px auto 0;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.38);
+    }
+
+    .listen-player-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .listen-player-title {
+      font: 500 1rem var(--serif);
+      letter-spacing: -.02em;
+    }
+
+    .listen-player-caption {
+      color: var(--muted);
+      font-size: .68rem;
+      margin-top: 4px;
+    }
+
+    .listen-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .listen-play,
+    .listen-stop {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--ink);
+      cursor: pointer;
+      transition: background .2s ease, color .2s ease, border-color .2s ease;
+    }
+
+    .listen-play {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      background: var(--accent-dark);
+      color: white;
+      border-color: var(--accent-dark);
+      font-size: 1rem;
+    }
+
+    .listen-play:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .listen-stop {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--muted);
+      border-color: var(--line);
+      font-size: .8rem;
+    }
+
+    .listen-stop:hover {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .listen-play:disabled,
+    .listen-stop:disabled {
+      opacity: .38;
+      cursor: not-allowed;
+    }
+
+    .listen-progress-track {
+      height: 3px;
+      background: var(--paper-2);
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .listen-progress {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      transition: width .15s linear;
+    }
+
+    .listen-settings {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .listen-setting {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: .68rem;
+    }
+
+    .listen-setting select {
+      max-width: 180px;
+      padding: 5px 22px 5px 7px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--ink);
+      font: inherit;
+      font-size: .7rem;
+    }
+
+    .listen-status {
+      color: var(--muted);
+      font-size: .68rem;
+      margin-left: auto;
+    }
+
+    @media (max-width: 560px) {
+      .listen-player { padding: 15px; margin-top: 27px; }
+      .listen-settings { gap: 11px; }
+      .listen-setting { width: 100%; justify-content: space-between; }
+      .listen-setting select { flex: 1; max-width: 68%; }
+      .listen-status { width: 100%; margin-left: 0; }
+    }
 
     .story-content {
       width: min(650px, 100%);
@@ -671,6 +864,45 @@
 
         <div id="storyContent" class="story-content"></div>
 
+        <section class="listen-player" aria-label="Story audio player">
+          <div class="listen-player-top">
+            <div>
+              <div class="listen-player-title">Listen to this story</div>
+              <div class="listen-player-caption" id="listenCaption">Settle in and let the words be read aloud</div>
+            </div>
+            <div class="listen-controls">
+              <button class="listen-play" id="listenPlayButton" type="button"
+                aria-label="Play story" title="Play story">▶</button>
+              <button class="listen-stop" id="listenStopButton" type="button"
+                aria-label="Stop reading" title="Stop">■</button>
+            </div>
+          </div>
+          <div class="listen-progress-track" role="progressbar"
+            aria-label="Story reading progress" aria-valuemin="0" aria-valuemax="100"
+            aria-valuenow="0" id="listenProgressTrack">
+            <div class="listen-progress" id="listenProgress"></div>
+          </div>
+          <div class="listen-settings">
+            <label class="listen-setting">
+              <span>Voice</span>
+              <select id="listenVoice" aria-label="Choose reading voice">
+                <option value="">Default voice</option>
+              </select>
+            </label>
+            <label class="listen-setting">
+              <span>Speed</span>
+              <select id="listenRate" aria-label="Reading speed">
+                <option value="0.8">0.8×</option>
+                <option value="1" selected>1×</option>
+                <option value="1.2">1.2×</option>
+                <option value="1.5">1.5×</option>
+                <option value="1.75">1.75×</option>
+              </select>
+            </label>
+            <span class="listen-status" id="listenStatus" role="status" aria-live="polite">Ready to listen</span>
+          </div>
+        </section>
+
         <div id="storyFootnoteWrapper" class="story-footnote-wrapper is-blurred" style="display: none;">
           <img
             id="storyFootnoteImage"
@@ -749,6 +981,14 @@
 
     let currentStory = null;
     let toastTimer = null;
+    let storyImageObserver = null;
+
+    const speech = "speechSynthesis" in window ? window.speechSynthesis : null;
+    let speechChunks = [];
+    let speechChunkIndex = 0;
+    let speechOffset = 0;
+    let speechRunId = 0;
+    let selectedSpeechVoice = null;
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
@@ -875,7 +1115,68 @@
       }).filter(Boolean);
     }
 
+    function loadStoryCardImage(image) {
+      if (!image || image.dataset.requested === "true") return;
+
+      const wrapper = image.closest(".story-card-image-wrap");
+      const source = image.dataset.src;
+      if (!source) return;
+
+      image.dataset.requested = "true";
+
+      const revealImage = () => {
+        wrapper?.classList.add("is-loaded");
+      };
+
+      image.onload = async () => {
+        try {
+          if (image.decode) await image.decode();
+        } catch {
+          // The image has loaded; decode may reject in some browsers.
+        }
+        revealImage();
+      };
+
+      image.onerror = () => {
+        wrapper?.classList.add("is-error");
+        image.remove();
+      };
+
+      image.src = source;
+
+      // Cached images may already be complete before onload fires.
+      if (image.complete && image.naturalWidth > 0) {
+        image.onload();
+      }
+    }
+
+    function observeStoryCardImages() {
+      if (storyImageObserver) storyImageObserver.disconnect();
+
+      const images = storiesGrid.querySelectorAll("img[data-src]");
+
+      if (!("IntersectionObserver" in window)) {
+        images.forEach(loadStoryCardImage);
+        return;
+      }
+
+      storyImageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          observer.unobserve(entry.target);
+          loadStoryCardImage(entry.target);
+        });
+      }, {
+        root: null,
+        rootMargin: "350px 0px",
+        threshold: 0.01
+      });
+
+      images.forEach(image => storyImageObserver.observe(image));
+    }
+
     function renderStoryCards(stories) {
+      if (storyImageObserver) storyImageObserver.disconnect();
       storiesGrid.replaceChildren();
 
       stories.forEach(story => {
@@ -889,11 +1190,11 @@
 
         if (story.image) {
           const image = document.createElement("img");
-          image.src = story.image;
+          image.dataset.src = story.image;
           image.alt = story.title;
           image.loading = "lazy";
           image.decoding = "async";
-          image.onerror = () => imageWrap.remove();
+          image.fetchPriority = "low";
           imageWrap.appendChild(image);
         }
 
@@ -911,6 +1212,8 @@
 
       document.getElementById("storiesCount").textContent =
         `${stories.length} ${stories.length === 1 ? "story" : "stories"}`;
+
+      observeStoryCardImages();
     }
 
     async function loadHomepage() {
@@ -1033,7 +1336,276 @@
       }
     }
 
+    // ==========================================
+    // STORY TEXT-TO-SPEECH
+    // Uses the browser's built-in Web Speech API.
+    // ==========================================
+
+    const listenPlayButton = document.getElementById("listenPlayButton");
+    const listenStopButton = document.getElementById("listenStopButton");
+    const listenVoiceSelect = document.getElementById("listenVoice");
+    const listenRateSelect = document.getElementById("listenRate");
+    const listenStatus = document.getElementById("listenStatus");
+    const listenCaption = document.getElementById("listenCaption");
+    const listenProgress = document.getElementById("listenProgress");
+    const listenProgressTrack = document.getElementById("listenProgressTrack");
+
+    function setListenProgress(percent) {
+      const value = Math.max(0, Math.min(100, percent));
+      listenProgress.style.width = `${value}%`;
+      listenProgressTrack.setAttribute("aria-valuenow", String(Math.round(value)));
+    }
+
+    function setListenStatus(message) {
+      listenStatus.textContent = message;
+    }
+
+    function updateListenButtons(state) {
+      if (state === "playing") {
+        listenPlayButton.textContent = "Ⅱ";
+        listenPlayButton.setAttribute("aria-label", "Pause story");
+        listenPlayButton.title = "Pause";
+        listenStopButton.disabled = false;
+      } else {
+        listenPlayButton.textContent = "▶";
+        listenPlayButton.setAttribute("aria-label", "Play story");
+        listenPlayButton.title = "Play story";
+        listenStopButton.disabled = state === "idle";
+      }
+    }
+
+    function populateSpeechVoices() {
+      if (!speech) return;
+
+      const previous = listenVoiceSelect.value;
+      const voices = speech.getVoices().slice().sort((a, b) => {
+        const aEnglish = /^en(-|$)/i.test(a.lang) ? 0 : 1;
+        const bEnglish = /^en(-|$)/i.test(b.lang) ? 0 : 1;
+        return aEnglish - bEnglish || a.name.localeCompare(b.name);
+      });
+
+      listenVoiceSelect.replaceChildren();
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Default voice";
+      listenVoiceSelect.appendChild(defaultOption);
+
+      voices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = `${voice.name} (${voice.lang})${voice.default ? " · default" : ""}`;
+        listenVoiceSelect.appendChild(option);
+      });
+
+      const previousStillExists = Array.from(listenVoiceSelect.options)
+        .some(option => option.value === previous);
+      listenVoiceSelect.value = previousStillExists ? previous : "";
+      selectedSpeechVoice = listenVoiceSelect.value === ""
+        ? null
+        : voices[Number(listenVoiceSelect.value)] || null;
+
+      // Keep the sorted list used by the select in sync with the selection.
+      listenVoiceSelect._speechVoices = voices;
+    }
+
+    function splitSpeechIntoChunks(text, maxLength = 220) {
+      const normalized = String(text || "").replace(/\s+/g, " ").trim();
+      if (!normalized) return [];
+
+      const sentences = normalized.match(/[^.!?。！？]+[.!?。！？]?/g) || [normalized];
+      const chunks = [];
+      let current = "";
+
+      sentences.forEach(sentence => {
+        const part = sentence.trim();
+        if (!part) return;
+
+        if ((current + " " + part).trim().length <= maxLength) {
+          current = (current + " " + part).trim();
+          return;
+        }
+
+        if (current) {
+          chunks.push(current);
+          current = "";
+        }
+
+        // Split exceptionally long sentences at word boundaries.
+        const words = part.split(/\s+/);
+        let fragment = "";
+
+        words.forEach(word => {
+          if ((fragment + " " + word).trim().length > maxLength && fragment) {
+            chunks.push(fragment);
+            fragment = word;
+          } else {
+            fragment = (fragment + " " + word).trim();
+          }
+        });
+
+        current = fragment;
+      });
+
+      if (current) chunks.push(current);
+      return chunks;
+    }
+
+    function startSpeechChunk(runId) {
+      if (!speech || runId !== speechRunId) return;
+
+      if (speechChunkIndex >= speechChunks.length) {
+        setListenProgress(100);
+        setListenStatus("Finished listening");
+        listenCaption.textContent = "Hope you enjoyed the story";
+        updateListenButtons("idle");
+        speechOffset = 0;
+        return;
+      }
+
+      const chunk = speechChunks[speechChunkIndex];
+      const utterance = new SpeechSynthesisUtterance(chunk);
+      utterance.rate = Number(listenRateSelect.value) || 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      const voices = listenVoiceSelect._speechVoices || [];
+      const voiceIndex = listenVoiceSelect.value;
+      const voice = voiceIndex === "" ? null : voices[Number(voiceIndex)];
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+      } else {
+        utterance.lang = "en-IN";
+      }
+
+      utterance.onstart = () => {
+        if (runId !== speechRunId) return;
+        setListenStatus("Reading aloud…");
+        listenCaption.textContent = `Part ${speechChunkIndex + 1} of ${speechChunks.length}`;
+        updateListenButtons("playing");
+      };
+
+      utterance.onboundary = event => {
+        if (runId !== speechRunId || !speechChunks.length) return;
+        const chunkProgress = Math.min(1, (event.charIndex || 0) / Math.max(1, chunk.length));
+        const completed = speechChunks
+          .slice(0, speechChunkIndex)
+          .reduce((sum, value) => sum + value.length, 0);
+        const total = speechChunks.reduce((sum, value) => sum + value.length, 0);
+        setListenProgress(((completed + chunkProgress * chunk.length) / Math.max(1, total)) * 100);
+      };
+
+      utterance.onend = () => {
+        if (runId !== speechRunId) return;
+        speechOffset += chunk.length;
+        speechChunkIndex += 1;
+        const total = speechChunks.reduce((sum, value) => sum + value.length, 0);
+        setListenProgress((speechOffset / Math.max(1, total)) * 100);
+        startSpeechChunk(runId);
+      };
+
+      utterance.onerror = event => {
+        if (runId !== speechRunId || event.error === "canceled" || event.error === "interrupted") return;
+        console.error("Speech synthesis error:", event.error);
+        setListenStatus("Audio couldn't continue");
+        listenCaption.textContent = "Try playing the story again";
+        updateListenButtons("idle");
+      };
+
+      speech.speak(utterance);
+    }
+
+    function playStoryAudio() {
+      if (!speech) {
+        setListenStatus("Text-to-speech isn't supported in this browser");
+        return;
+      }
+
+      if (speech.speaking && speech.paused) {
+        speech.resume();
+        setListenStatus("Reading aloud…");
+        updateListenButtons("playing");
+        return;
+      }
+
+      if (speech.speaking) {
+        speech.pause();
+        setListenStatus("Paused");
+        updateListenButtons("paused");
+        return;
+      }
+
+      if (!speechChunks.length || speechChunkIndex >= speechChunks.length) {
+        const storyText = document.getElementById("storyContent").innerText;
+        speechChunks = splitSpeechIntoChunks(storyText);
+        speechChunkIndex = 0;
+        speechOffset = 0;
+        setListenProgress(0);
+      }
+
+      if (!speechChunks.length) {
+        setListenStatus("There's no story text to read");
+        return;
+      }
+
+      speechRunId += 1;
+      speech.cancel();
+      startSpeechChunk(speechRunId);
+    }
+
+    function stopStoryAudio() {
+      if (speech) speech.cancel();
+      speechRunId += 1;
+      speechChunks = [];
+      speechChunkIndex = 0;
+      speechOffset = 0;
+      setListenProgress(0);
+      setListenStatus("Stopped");
+      listenCaption.textContent = "Settle in and let the words be read aloud";
+      updateListenButtons("idle");
+    }
+
+    if (speech) {
+      populateSpeechVoices();
+      speech.addEventListener("voiceschanged", populateSpeechVoices);
+      updateListenButtons("idle");
+      listenPlayButton.addEventListener("click", playStoryAudio);
+      listenStopButton.addEventListener("click", stopStoryAudio);
+      listenVoiceSelect.addEventListener("change", () => {
+        const voices = listenVoiceSelect._speechVoices || [];
+        selectedSpeechVoice = listenVoiceSelect.value === ""
+          ? null
+          : voices[Number(listenVoiceSelect.value)] || null;
+        if (speech.speaking || speech.paused) {
+          stopStoryAudio();
+          setListenStatus("Voice changed · ready to listen");
+        }
+      });
+      listenRateSelect.addEventListener("change", () => {
+        if (speech.speaking || speech.paused) {
+          stopStoryAudio();
+          setListenStatus("Speed changed · ready to listen");
+        }
+      });
+    } else {
+      listenPlayButton.disabled = true;
+      listenStopButton.disabled = true;
+      listenVoiceSelect.disabled = true;
+      listenRateSelect.disabled = true;
+      setListenStatus("Text-to-speech isn't supported in this browser");
+    }
+
     function renderStory(story) {
+      if (speech) speech.cancel();
+      speechRunId += 1;
+      speechChunks = [];
+      speechChunkIndex = 0;
+      speechOffset = 0;
+      setListenProgress(0);
+      setListenStatus("Ready to listen");
+      listenCaption.textContent = "Settle in and let the words be read aloud";
+      updateListenButtons("idle");
+
       currentStory = story;
 
       showView("story");
@@ -1286,7 +1858,14 @@ if (footnoteWrapper && footnoteImage && footnoteMask) {
     // INITIALIZE
     // ==========================================
 
-    window.addEventListener("popstate", route);
+    window.addEventListener("popstate", () => {
+      if (speech) speech.cancel();
+      route();
+    });
+
+    window.addEventListener("pagehide", () => {
+      if (speech) speech.cancel();
+    });
 
     route();
 
