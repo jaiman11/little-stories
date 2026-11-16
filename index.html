@@ -106,7 +106,126 @@
       text-transform: uppercase;
     }
 
+    .home-view { padding-top: 58px; }
+
+    .home-intro {
+      max-width: 720px;
+      margin: 12px auto 58px;
+      text-align: center;
+    }
+
+    .home-intro .eyebrow { margin-bottom: 18px; }
+
+    .home-intro h1 {
+      font: 400 clamp(2.8rem, 7vw, 5.1rem)/1.06 var(--serif);
+      letter-spacing: -.065em;
+      margin: 0 auto 18px;
+    }
+
+    .home-intro p {
+      color: var(--muted);
+      font: italic 400 clamp(1rem, 2vw, 1.18rem)/1.7 var(--serif);
+      margin: 0 auto;
+      max-width: 510px;
+    }
+
+    .stories-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stories-heading h2 {
+      font: 500 1.35rem var(--serif);
+      letter-spacing: -.025em;
+      margin: 0;
+    }
+
+    .stories-count {
+      color: var(--muted);
+      font-size: .68rem;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 34px 25px;
+    }
+
+    .story-card {
+      min-width: 0;
+      text-decoration: none;
+      display: block;
+      group: story-card;
+    }
+
+    .story-card-image-wrap {
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      background: var(--paper-2);
+      margin-bottom: 16px;
+    }
+
+    .story-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .55s ease;
+    }
+
+    .story-card:hover img { transform: scale(1.045); }
+
+    .story-card-title {
+      font: 500 clamp(1.08rem, 1.7vw, 1.35rem)/1.35 var(--serif);
+      letter-spacing: -.025em;
+      margin: 0;
+      transition: color .2s ease;
+    }
+
+    .story-card:hover .story-card-title { color: var(--accent-dark); }
+
+    .story-card-meta {
+      color: var(--muted);
+      font-size: .66rem;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      margin-top: 9px;
+    }
+
+    .home-loading {
+      padding: 36px 20px 60px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .home-view .state-panel { margin-top: 0; }
+
     .story-view { padding-top: 28px; }
+
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      transition: color .2s ease;
+    }
+
+    .back-home:hover { color: var(--accent-dark); }
+
+    .story-back-top { margin: 4px 0 0; }
+    .story-back-bottom { margin-top: 36px; }
 
     .story-article {
       width: min(760px, 100%);
@@ -420,6 +539,8 @@
 
     @media (max-width: 800px) {
       .story-article { margin-top: 52px; }
+      .stories-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .home-intro { margin-bottom: 48px; }
     }
 
     @media (max-width: 560px) {
@@ -437,6 +558,12 @@
       }
 
       .story-view { padding-top: 18px; }
+      .home-view { padding-top: 42px; }
+      .home-intro { margin: 8px auto 42px; }
+      .stories-grid { gap: 27px 14px; }
+      .story-card-image-wrap { margin-bottom: 11px; }
+      .story-card-title { font-size: 1.02rem; }
+      .stories-heading h2 { font-size: 1.2rem; }
 
       .story-article { margin-top: 48px; }
 
@@ -495,7 +622,33 @@
       Finding your story…
     </section>
 
+    <section id="homeView" class="home-view hidden" aria-live="polite">
+      <div class="home-intro">
+        <p class="eyebrow">Stories worth staying for</p>
+        <h1>A little world<br>of little stories.</h1>
+        <p>Take your time. Find a story, settle in, and let the words take you somewhere.</p>
+      </div>
+
+      <div class="stories-heading">
+        <h2>The collection</h2>
+        <span class="stories-count" id="storiesCount">A growing collection</span>
+      </div>
+
+      <div id="homeLoading" class="home-loading" role="status">
+        <div class="loader" aria-hidden="true"></div>
+        Gathering the stories…
+      </div>
+      <div id="storiesGrid" class="stories-grid"></div>
+      <section id="homeError" class="state-panel hidden" aria-live="polite">
+        <p class="eyebrow">A little pause</p>
+        <h2>The stories aren't here just yet.</h2>
+        <p id="homeErrorMessage">We couldn't load the collection. Please try again.</p>
+        <button class="button secondary" id="homeRetryButton" type="button">Try again</button>
+      </section>
+    </section>
+
     <section id="storyView" class="story-view hidden" aria-live="polite">
+      <a class="back-home story-back-top" href="/" aria-label="Back to home">← Back to all stories</a>
       <article class="story-article">
 
         <div class="story-kicker">
@@ -542,6 +695,9 @@
         <div class="story-bottom">
           <span class="small-mark">Keep a little wonder</span>
         </div>
+        <div class="story-back-bottom" style="text-align:center;">
+          <a class="back-home" href="/">← Back to all stories</a>
+        </div>
 
       </article>
     </section>
@@ -574,11 +730,18 @@
     const GIST_BASE_URL =
       "https://gist.githubusercontent.com/jaiman11/0607f6913263a7141ab4848030b19e46/raw";
 
+    const STORIES_LIST_URL =
+      "https://gist.githubusercontent.com/jaiman11/28e2adc644283d25bfd238fa253b9fe2/raw/list.json";
+
     // ==========================================
     // DOM ELEMENTS
     // ==========================================
 
     const storyView = document.getElementById("storyView");
+    const homeView = document.getElementById("homeView");
+    const storiesGrid = document.getElementById("storiesGrid");
+    const homeLoading = document.getElementById("homeLoading");
+    const homeError = document.getElementById("homeError");
     const loadingState = document.getElementById("loadingState");
     const notFoundView = document.getElementById("notFoundView");
     const readingProgress = document.getElementById("readingProgress");
@@ -663,6 +826,7 @@
 
     function showView(view) {
       storyView.classList.toggle("hidden", view !== "story");
+      homeView.classList.toggle("hidden", view !== "home");
       loadingState.classList.toggle("hidden", view !== "loading");
       notFoundView.classList.toggle("hidden", view !== "notfound");
 
@@ -672,6 +836,114 @@
         top: 0,
         behavior: "instant"
       });
+    }
+
+    // ==========================================
+    // HOMEPAGE STORY COLLECTION
+    // ==========================================
+
+    function parseStoryList(raw) {
+      let entries;
+
+      try {
+        entries = JSON.parse(raw);
+      } catch {
+        // Also tolerate a plain newline-separated list of entries.
+        entries = String(raw || "")
+          .split(/\\r?\\n/)
+          .map(line => line.trim())
+          .filter(Boolean);
+      }
+
+      if (!Array.isArray(entries)) {
+        throw new Error("The story list isn't in the expected format.");
+      }
+
+      return entries.map(entry => {
+        if (typeof entry !== "string") return null;
+
+        const parts = entry.split("::");
+        if (parts.length < 3) return null;
+
+        const id = parts.shift().trim();
+        const image = parts.pop().trim();
+        const title = parts.join("::").trim();
+
+        if (!/^[a-zA-Z0-9_-]+$/.test(id) || !title) return null;
+
+        return { id, title, image: safeImageURL(image) };
+      }).filter(Boolean);
+    }
+
+    function renderStoryCards(stories) {
+      storiesGrid.replaceChildren();
+
+      stories.forEach(story => {
+        const link = document.createElement("a");
+        link.className = "story-card";
+        link.href = `/story/${encodeURIComponent(story.id)}/`;
+        link.setAttribute("aria-label", `Read ${story.title}`);
+
+        const imageWrap = document.createElement("div");
+        imageWrap.className = "story-card-image-wrap";
+
+        if (story.image) {
+          const image = document.createElement("img");
+          image.src = story.image;
+          image.alt = story.title;
+          image.loading = "lazy";
+          image.decoding = "async";
+          image.onerror = () => imageWrap.remove();
+          imageWrap.appendChild(image);
+        }
+
+        const title = document.createElement("h3");
+        title.className = "story-card-title";
+        title.textContent = story.title;
+
+        const meta = document.createElement("div");
+        meta.className = "story-card-meta";
+        meta.textContent = "A little story";
+
+        link.append(imageWrap, title, meta);
+        storiesGrid.appendChild(link);
+      });
+
+      document.getElementById("storiesCount").textContent =
+        `${stories.length} ${stories.length === 1 ? "story" : "stories"}`;
+    }
+
+    async function loadHomepage() {
+      showView("home");
+      document.title = "little stories — a quiet place for words";
+      document.querySelector('meta[name="description"]').content =
+        "A quiet corner of the internet for stories, thoughts, and little moments.";
+      homeLoading.classList.remove("hidden");
+      homeError.classList.add("hidden");
+      storiesGrid.replaceChildren();
+
+      try {
+        const response = await fetch(STORIES_LIST_URL, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Unable to load the story list (HTTP ${response.status}).`);
+        }
+
+        const raw = await response.text();
+        const stories = parseStoryList(raw);
+
+        if (!stories.length) {
+          throw new Error("No valid stories were found in the story list.");
+        }
+
+        renderStoryCards(stories);
+      } catch (error) {
+        console.error("Homepage loading failed:", error);
+        document.getElementById("homeErrorMessage").textContent =
+          error.message || "Unable to load the story collection.";
+        homeError.classList.remove("hidden");
+      } finally {
+        homeLoading.classList.add("hidden");
+      }
     }
 
     // ==========================================
@@ -859,10 +1131,14 @@ if (footnoteWrapper && footnoteImage && footnoteMask) {
 
       if (!match) {
         currentStory = null;
+
+        if (pathname === "/" || pathname === "/index.html") {
+          await loadHomepage();
+          return;
+        }
+
         showView("notfound");
-
         document.title = "Story not found — little stories";
-
         return;
       }
 
@@ -978,6 +1254,9 @@ if (footnoteWrapper && footnoteImage && footnoteMask) {
 
     document.getElementById("retryButton")
       .addEventListener("click", route);
+
+    document.getElementById("homeRetryButton")
+      .addEventListener("click", loadHomepage);
 
     // ==========================================
     // READING PROGRESS
